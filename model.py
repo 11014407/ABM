@@ -9,18 +9,18 @@ class Kitchen(Model):
 	"""
 	The model for the kitchen cleaning PD game
 	"""
-	def __init__(self, players = 6)
-		self.players = 0
+	def __init__(self, players = 6, environment)
 		self.scheduler = RandomActivation(self)
-
+		self.environment = 0
 		for i in range(players):
-			relucentce = np.randomint(0, 10)
+			reluctance = np.randomint(0, 10)
 			social_aptitude = np.randomint(0, 10)
-			self.new_agent(i, )
+			self.new_agent(i, reluctance, social_aptitude)
+		self.players = i
 
 
-	def new_agent(self, roomnumber, relucentce, social_aptitude):
-		agent = Student(roomnumber, relucentce, social_aptitude)
+	def new_agent(self, roomnumber, reluctance, social_aptitude):
+		agent = Student(roomnumber, reluctance, social_aptitude)
 		self.scheduler.add(agent)
 		self.players += 1
 
@@ -35,7 +35,7 @@ class Kitchen(Model):
 			for key in agent_keys:
 				if key in agents:
 					agents[key].step()
-
+	
 	def run_model(self, step_total):
 		for i in range(step_total):
 			self.step()
