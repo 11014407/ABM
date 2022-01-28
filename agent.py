@@ -27,9 +27,7 @@ class Student(Agent):
 		"An instance of the prisoners dilemma"
 
 		choice_index = np.argmax(self.reward_matrix)
-		# # print(choice_index)
-		# matrix = np.array([[1, 1], [1, 1]])
-		# print(np.argmax(matrix))
+	
 		if choice_index == 0 or choice_index == 1: 
 			self.choice = 'cooperate'
 		else: 
