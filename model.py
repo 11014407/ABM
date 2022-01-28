@@ -9,12 +9,13 @@ class Kitchen(Model):
 	"""
 	The model for the kitchen cleaning PD game
 	"""
-	def __init__(self, n_agents = 6):
+	def __init__(self, cleaning_mode, n_agents = 6,):
 		self.n_agents = n_agents
 		self.min_cf = -10
 		self.max_cf = 10
 		self.cf = 9
 		self.deterioration = 1
+		self.cleaning_mode = cleaning_mode
 		self.agentlist = []
 		for i in range(n_agents):
 			reluctance = np.random.randint(0, 10)
@@ -39,12 +40,28 @@ class Kitchen(Model):
 		for player in self.agentlist:
 			player.step()
 			choices.append(player.choice)
+	
+		# calculate number of cooperators and proportion of cooperators
+		n_cooperators = choices.count('cooperate')
+		p_cooperators = n_cooperators/self.n_agents
 
-		if 'cooperate' in choices: 
-			self.cf = self.max_cf
-		else: 
-			if self.cf > self.min_cf: 
-				self.cf -= self.deterioration
+		if self.cleaning_mode == 'full': 
+			# option 1: kitchen is cleaned fully if one agent cooperates.
+			if n_cooperators > 0: 
+				self.cf = self.max_cf
+			else: 
+				if self.cf > self.min_cf: 
+					self.cf -= self.deterioration
+
+		if self.cleaning_mode == 'proportional': 
+			# option 2: increase in cf is proportional to number of agents that cooperate, namely 
+			# the difference between max_cf and the current state times the proportion of cooperators.
+
+			if n_cooperators > 0:
+				self.cf += (self.max_cf - self.cf)*p_cooperators
+			else: 
+				if self.cf > self.min_cf: 
+					self.cf -= self.deterioration
 
 		for player in self.agentlist:
 			if player.choice == 'defect': 
