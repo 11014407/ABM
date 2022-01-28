@@ -1,8 +1,10 @@
-import model
-import agent
+from model import Kitchen
 import numpy as np
 
 
 def __main__():
 	model = Kitchen()
-	model.run_model(200)
+	model.run_model(20)
+
+if __name__ == "__main__":
+    __main__()
