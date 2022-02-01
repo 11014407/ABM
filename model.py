@@ -9,7 +9,7 @@ class Kitchen(Model):
 	"""
 	The model for the kitchen cleaning PD game
 	"""
-	def __init__(self, cleaning_mode, n_agents = 6,):
+	def __init__(self, cleaning_mode, step_total, n_agents = 6):
 		self.n_agents = n_agents
 		self.min_cf = -10
 		self.max_cf = 10
@@ -17,6 +17,10 @@ class Kitchen(Model):
 		self.deterioration = 1
 		self.cleaning_mode = cleaning_mode
 		self.agentlist = []
+
+		# matrix for awarded rewards
+		self.player_rewards = []
+
 		for i in range(n_agents):
 			reluctance = np.random.randint(0, 10)
 			social_aptitude = np.random.randint(0, 10)
@@ -27,7 +31,6 @@ class Kitchen(Model):
 	def new_agent(self, roomnumber, reluctance, social_aptitude):
 		agent = Student(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, 0, self.n_agents)
 		self.agentlist.append(agent)
-		# self.scheduler.add(agent)
 		self.n_agents += 1
 
 	def remove_agent(self, agent):
@@ -36,6 +39,9 @@ class Kitchen(Model):
 
 	def step(self):
 		
+		# add row to reward list
+		self.player_rewards.append([])
+
 		choices = []
 		for player in self.agentlist:
 			player.step()
@@ -44,6 +50,10 @@ class Kitchen(Model):
 		# calculate number of cooperators and proportion of cooperators
 		n_cooperators = choices.count('cooperate')
 		p_cooperators = n_cooperators/self.n_agents
+
+		# make actual reward matrix to grant to agents: 
+		reward_matrix = np.array([[self.max_cf - (self.max_cf - self.cf)/self.n_agents, self.max_cf + self.cf],[self.max_cf, self.cf]])
+
 
 		if self.cleaning_mode == 'full': 
 			# option 1: kitchen is cleaned fully if one agent cooperates.
@@ -66,11 +76,31 @@ class Kitchen(Model):
 		for player in self.agentlist:
 			if player.choice == 'defect': 
 				player.sp = 0 # nog aanpassen!
-			else: 
+				# Punishment
+				if n_cooperators == 0: 
+					self.player_rewards[-1].append(reward_matrix[1,1])
+				# Temptation
+				else: 
+					self.player_rewards[-1].append(reward_matrix[1,0])
+			
+			else:
 				player.sp = 0
-			player.update_rewards(self.cf, self.n_agents, player.sp)
+				# Sucker
+				if n_cooperators == 0: 
+					self.player_rewards[-1].append(reward_matrix[0,1])
+				# Reward
+				else: 
+					self.player_rewards[-1].append(reward_matrix[0,0]) 
 
+			player.update_rewards(self.cf, self.n_agents, player.sp)
+		
+
+		
 	def run_model(self, step_total):
 		for i in range(step_total):
 			self.step()
 			print(self.cf)
+		self.player_rewards = np.array(self.player_rewards)
+			
+	
+	

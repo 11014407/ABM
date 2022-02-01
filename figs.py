@@ -22,6 +22,13 @@ def __main__():
     plt.legend(["0", "2", "4", "6"])
     plt.savefig("figs/plot_deteriorations_startcf{}.png".format(cf), dpi=300)
 
+    # print("plot average rewards from different starting values. ")
+
+    # for i in [-10, -5, 0, 5, 10]:
+    #     model = Kitchen(cf=i, step_total=20)
+    #     model.run_model(20)
+    #     plt.plot(model.cfdata)
+
 if __name__ == "__main__":
     __main__()
 
