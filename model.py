@@ -71,7 +71,10 @@ class Kitchen(Model):
 		p_cooperators = n_cooperators/self.n_agents
 
 		# make actual reward matrix to grant to agents: 
-		reward_matrix = np.array([[self.max_cf - (self.max_cf - self.cf)/self.n_agents, self.cf],[self.max_cf, self.cf]])
+		if n_cooperators > 0:
+			reward_matrix = np.array([[self.max_cf - (self.max_cf - self.cf)/n_cooperators, self.cf],[self.max_cf, self.cf]])
+		else: 
+			reward_matrix = np.array([[0, self.cf],[self.max_cf, self.cf]])
 
 
 		if self.cleaning_mode == 'full': 
@@ -157,8 +160,8 @@ class Kitchen(Model):
 	def run_model(self, step_total):
 		for i in range(step_total):
 			self.step()
-			print(self.cf)
 		self.player_rewards = np.array(self.player_rewards)
+		print(self.player_rewards)
 			
 	
 	
