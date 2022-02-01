@@ -43,11 +43,11 @@ class Kitchen(Model):
 		chance = np.random.uniform()
 		# print(chance)
 		if(chance < 0.2):
-			agent = Slob(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, 0, self.sp_mode, self.n_agents)
+			agent = Slob(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, self.sp_mode, self.n_agents)
 		elif(chance > 0.8):
-			agent = NeatFreak(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, 0, self.sp_mode, self.n_agents)
+			agent = NeatFreak(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, self.sp_mode, self.n_agents)
 		else:
-			agent = Student(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, 0, self.sp_mode self.n_agents)
+			agent = Student(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, self.sp_mode, self.n_agents)
 		# print(type(agent))
 		self.agentlist.append(agent)
 		# self.scheduler.add(agent)
@@ -87,10 +87,10 @@ class Kitchen(Model):
 		p_cooperators = n_cooperators/self.n_agents
   
 		# calculate social punishment
-		if self.social_punishment == "none":
+		if self.sp_mode == "none":
 			sp = 0
 			predict_sp = 0
-		elif self.social_punishment == "mode1":
+		elif self.sp_mode == "mode1":
 			if self.n_agents != n_cooperators:
 				sp = self.max_cf - (self.max_cf - self.cf) / (self.n_agents - n_cooperators)
 			else:

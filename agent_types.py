@@ -10,18 +10,24 @@ class NeatFreak(Student):
 	A student which is likely to clean the kitchen
 	Estimates rewards of cleaning much higher than rewards of not cleaning
 	"""
-	def __init__(self, room, reluctance, social_aptitude, max_cf, cf, sp, n_agents):
+	def __init__(self, room, reluctance, social_aptitude, max_cf, cf, sp_mode, n_agents):
+
 		self.room = room
 		self.reluctance = reluctance
 		self.social_aptitude = social_aptitude
 		self.cf = cf
 		self.max_cf = max_cf
-		self.sp = sp
 		self.player_status = 5
 		self.n_agents = n_agents
 		self.choice = 'no_games_played'
-		self.reward_matrix = np.array([[max_cf - (max_cf - cf)/n_agents, cf], [max_cf - sp, cf]])
+  
+		if sp_mode == "none":
+			sp = 0
+		elif sp_mode == "mode1":
+			sp = self.max_cf - self.cf
 
+		self.reward_matrix = np.array([[max_cf - (max_cf - cf)/n_agents, cf], [max_cf - sp, cf]])
+ 
 	def update_rewards(self, cf, n_agents, sp, difference = 0, ccp = 1):
 		if ccp == 1:
 
@@ -57,16 +63,21 @@ class Slob(Student):
 	A student which will never clean the kitchen
 	risks getting ostracized
 	"""
-	def __init__(self, room, reluctance, social_aptitude, max_cf, cf, sp, n_agents):
+	def __init__(self, room, reluctance, social_aptitude, max_cf, cf, sp_mode, n_agents):
 		self.room = room
 		self.reluctance = reluctance
 		self.social_aptitude = social_aptitude
 		self.cf = cf
 		self.max_cf = max_cf
-		self.sp = sp
 		self.player_status = 5
 		self.n_agents = n_agents
 		self.choice = 'no_games_played'
+  
+		if sp_mode == "none":
+			sp = 0
+		elif sp_mode == "mode1":
+			sp = self.max_cf - self.cf
+   
 		self.reward_matrix = np.array([[max_cf - (max_cf - cf)/n_agents, cf], [max_cf - sp, cf]])
 
 	def update_rewards(self, cf, n_agents, sp, difference = 0, ccp = 1):
