@@ -15,16 +15,18 @@ class Kitchen(Model):
 		self.max_cf = 10
 		self.cf = 9
 		self.deterioration = 1
-		self.cleaning_mode = cleaning_mode
 		self.agentlist = []
 
 		# matrix for awarded rewards
 		self.player_rewards = []
 
+		self.matrix = np.zeros((21,self.n_agents))
+		self.run_number = 0
 		for i in range(n_agents):
 			reluctance = np.random.randint(0, 10)
 			social_aptitude = np.random.randint(0, 10)
 			self.new_agent(i, reluctance, social_aptitude)
+		print(self.n_agents)
 
 
 
@@ -43,9 +45,25 @@ class Kitchen(Model):
 		self.player_rewards.append([])
 
 		choices = []
+		matrix_loop = 0
+		choice_list = []
+
 		for player in self.agentlist:
 			player.step()
+
 			choices.append(player.choice)
+			if player.choice == 'cooperate':
+				choice_list.append(0)
+			else :
+				choice_list.append(1)
+
+			print(player.player_status)
+
+			if player.player_status == 0:
+			
+				self.remove_agent(player)
+				self.new_agent(1,1,1)
+				self.n_agents += 1
 	
 		# calculate number of cooperators and proportion of cooperators
 		n_cooperators = choices.count('cooperate')
@@ -95,7 +113,46 @@ class Kitchen(Model):
 			player.update_rewards(self.cf, self.n_agents, player.sp)
 		
 
+		self.matrix = np.delete(self.matrix,0,axis = 0)
+		self.matrix = np.insert(self.matrix,20,choice_list, axis = 0)
+
+		if self.run_number > 20:
+			 
+			person = 0
 		
+			for element in self.matrix[10]:
+
+				ccp = 1
+
+				if element == 0:
+					ccp = 0
+				
+				new_matrix = self.matrix.copy()
+				new_matrix = np.delete(new_matrix,person,1)
+	
+				total_nr_previous = 0
+
+				for i in range(0,9):
+					for j in new_matrix[i:]:
+						total_nr_previous += j
+				
+				total_nr_after = 0
+
+				for i in range(11,20):
+
+					for j in new_matrix[i:]:
+						total_nr_after += j
+
+				difference = total_nr_after - total_nr_previous
+
+				current_player = self.agentlist[person]
+				current_player.update_rewards(self.cf,self.n_agents,current_player.sp, ccp)
+
+				person += 1
+
+		self.run_number += 1
+
+
 	def run_model(self, step_total):
 		for i in range(step_total):
 			self.step()
