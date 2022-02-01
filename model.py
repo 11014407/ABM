@@ -5,6 +5,8 @@ from mesa import Model
 from agent import Student
 from mesa.time import RandomActivation
 
+from agent_types import *
+
 class Kitchen(Model):
 	"""
 	The model for the kitchen cleaning PD game
@@ -13,7 +15,7 @@ class Kitchen(Model):
 		self.n_agents = n_agents
 		self.min_cf = -10
 		self.max_cf = 10
-		self.cf = 9
+		self.cf = 0
 		self.deterioration = 1
 		self.agentlist = []
 		self.cleaning_mode = cleaning_mode
@@ -27,14 +29,27 @@ class Kitchen(Model):
 			reluctance = np.random.randint(0, 10)
 			social_aptitude = np.random.randint(0, 10)
 			self.new_agent(i, reluctance, social_aptitude)
-		print(self.n_agents)
+		# print(self.n_agents)
 
 
+
+	# def new_agent(self, roomnumber, reluctance, social_aptitude):
+	# 	agent = Student(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, 0, self.n_agents)
+	# 	self.agentlist.append(agent)
+	# 	self.n_agents += 1
 
 	def new_agent(self, roomnumber, reluctance, social_aptitude):
-		agent = Student(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, 0, self.n_agents)
+		chance = np.random.uniform()
+		# print(chance)
+		if(chance < 0.2):
+			agent = Slob(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, 0, self.n_agents)
+		elif(chance > 0.8):
+			agent = NeatFreak(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, 0, self.n_agents)
+		else:
+			agent = Student(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, 0, self.n_agents)
+		# print(type(agent))
 		self.agentlist.append(agent)
-		self.n_agents += 1
+		# self.scheduler.add(agent)
 
 	def remove_agent(self, agent):
 		self.agentlist.remove(agent)
@@ -58,7 +73,7 @@ class Kitchen(Model):
 			else :
 				choice_list.append(1)
 
-			print(player.player_status)
+			# print(player.player_status)
 
 			if player.player_status == 0:
 			
@@ -91,6 +106,7 @@ class Kitchen(Model):
 
 			if n_cooperators > 0:
 				self.cf += (self.max_cf - self.cf)*p_cooperators
+				self.cf = int(self.cf)
 			else: 
 				if self.cf > self.min_cf: 
 					self.cf -= self.deterioration
@@ -120,7 +136,7 @@ class Kitchen(Model):
 		self.matrix = np.delete(self.matrix,0,axis = 0)
 		self.matrix = np.insert(self.matrix,20,choice_list, axis = 0)
 
-		if self.run_number > 20:
+		if self.run_number == 20:
 			 
 			person = 0
 		
@@ -155,13 +171,14 @@ class Kitchen(Model):
 				person += 1
 
 		self.run_number += 1
+		print(self.cf)
 
 
 	def run_model(self, step_total):
 		for i in range(step_total):
 			self.step()
 		self.player_rewards = np.array(self.player_rewards)
-		print(self.player_rewards)
+		# print(self.player_rewards)
 			
 	
 	
