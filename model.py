@@ -11,7 +11,7 @@ class Kitchen(Model):
 	"""
 	The model for the kitchen cleaning PD game
 	"""
-	def __init__(self, cleaning_mode, n_agents = 6):
+	def __init__(self, cleaning_mode, n_agents = 6, sp_mode = "none"):
 		self.n_agents = n_agents
 		self.min_cf = -10
 		self.max_cf = 10
@@ -19,6 +19,7 @@ class Kitchen(Model):
 		self.deterioration = 1
 		self.agentlist = []
 		self.cleaning_mode = cleaning_mode
+		self.sp_mode = sp_mode
 
 		# matrix for awarded rewards
 		self.player_rewards = []
@@ -42,11 +43,11 @@ class Kitchen(Model):
 		chance = np.random.uniform()
 		# print(chance)
 		if(chance < 0.2):
-			agent = Slob(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, 0, self.n_agents)
+			agent = Slob(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, 0, self.sp_mode, self.n_agents)
 		elif(chance > 0.8):
-			agent = NeatFreak(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, 0, self.n_agents)
+			agent = NeatFreak(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, 0, self.sp_mode, self.n_agents)
 		else:
-			agent = Student(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, 0, self.n_agents)
+			agent = Student(roomnumber, reluctance, social_aptitude, self.max_cf, self.cf, 0, self.sp_mode self.n_agents)
 		# print(type(agent))
 		self.agentlist.append(agent)
 		# self.scheduler.add(agent)
@@ -84,12 +85,25 @@ class Kitchen(Model):
 		# calculate number of cooperators and proportion of cooperators
 		n_cooperators = choices.count('cooperate')
 		p_cooperators = n_cooperators/self.n_agents
+  
+		# calculate social punishment
+		if self.social_punishment == "none":
+			sp = 0
+			predict_sp = 0
+		elif self.social_punishment == "mode1":
+			if self.n_agents != n_cooperators:
+				sp = self.max_cf - (self.max_cf - self.cf) / (self.n_agents - n_cooperators)
+			else:
+				sp = 0
+	
 
 		# make actual reward matrix to grant to agents: 
 		if n_cooperators > 0:
-			reward_matrix = np.array([[self.max_cf - (self.max_cf - self.cf)/n_cooperators, self.cf],[self.max_cf, self.cf]])
+			reward_matrix = np.array([[self.max_cf - (self.max_cf - self.cf) / n_cooperators, self.cf],
+                             		  [self.max_cf - sp, self.cf]])
 		else: 
-			reward_matrix = np.array([[0, self.cf],[self.max_cf, self.cf]])
+			reward_matrix = np.array([[0, self.cf],
+                             		  [self.max_cf, self.cf]])
 
 
 		if self.cleaning_mode == 'full': 
@@ -110,7 +124,12 @@ class Kitchen(Model):
 			else: 
 				if self.cf > self.min_cf: 
 					self.cf -= self.deterioration
+     
+		# update predicted social punishment
+		if self.sp_mode == "mode1":
+			predict_sp = self.max_cf - self.cf
 
+		# sla rewards op in self.player_rewards
 		for player in self.agentlist:
 			if player.choice == 'defect': 
 				player.sp = 0 # nog aanpassen!
@@ -130,7 +149,8 @@ class Kitchen(Model):
 				else: 
 					self.player_rewards[-1].append(reward_matrix[0,0]) 
 
-			player.update_rewards(self.cf, self.n_agents, player.sp)
+			# update reward matrix of player
+			player.update_rewards(self.cf, self.n_agents, predict_sp)
 		
 
 		self.matrix = np.delete(self.matrix,0,axis = 0)
