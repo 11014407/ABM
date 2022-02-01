@@ -9,13 +9,14 @@ class Kitchen(Model):
 	"""
 	The model for the kitchen cleaning PD game
 	"""
-	def __init__(self, cleaning_mode, step_total, n_agents = 6):
+	def __init__(self, cleaning_mode, n_agents = 6):
 		self.n_agents = n_agents
 		self.min_cf = -10
 		self.max_cf = 10
 		self.cf = 9
 		self.deterioration = 1
 		self.agentlist = []
+		self.cleaning_mode = cleaning_mode
 
 		# matrix for awarded rewards
 		self.player_rewards = []
@@ -70,7 +71,7 @@ class Kitchen(Model):
 		p_cooperators = n_cooperators/self.n_agents
 
 		# make actual reward matrix to grant to agents: 
-		reward_matrix = np.array([[self.max_cf - (self.max_cf - self.cf)/self.n_agents, self.max_cf + self.cf],[self.max_cf, self.cf]])
+		reward_matrix = np.array([[self.max_cf - (self.max_cf - self.cf)/self.n_agents, self.cf],[self.max_cf, self.cf]])
 
 
 		if self.cleaning_mode == 'full': 

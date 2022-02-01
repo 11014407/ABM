@@ -4,7 +4,7 @@ import numpy as np
 
 def __main__(): 
 
-    model = Kitchen(cleaning_mode='full', step_total = 20)
+    model = Kitchen(cleaning_mode='full')
     model.run_model(20)
 
     average_reward = np.mean(model.player_rewards, axis = 1)
