@@ -11,15 +11,16 @@ class Kitchen(Model):
 	"""
 	The model for the kitchen cleaning PD game
 	"""
-	def __init__(self, cleaning_mode, n_agents = 6, sp_mode = "none"):
+	def __init__(self, cleaning_mode, cf=0, deterioration=1, n_agents = 6, sp_mode = "none", ostracization="no"):
 		self.n_agents = n_agents
 		self.min_cf = -10
 		self.max_cf = 10
-		self.cf = 0
-		self.deterioration = 1
+		self.cf = cf
+		self.deterioration = deterioration
 		self.agentlist = []
 		self.cleaning_mode = cleaning_mode
 		self.sp_mode = sp_mode
+		self.ostracization = ostracization
 
 		# matrix for awarded rewards
 		self.player_rewards = []
@@ -191,12 +192,14 @@ class Kitchen(Model):
 				person += 1
 
 		self.run_number += 1
-		print(self.cf)
+		# print(self.cf)
 
 
 	def run_model(self, step_total):
+		self.cfdata = [self.cf]
 		for i in range(step_total):
 			self.step()
+			self.cfdata.append(self.cf)
 		self.player_rewards = np.array(self.player_rewards)
 		# print(self.player_rewards)
 			
