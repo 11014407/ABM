@@ -77,7 +77,7 @@ class Kitchen(Model):
 
 			# print(player.player_status)
 
-			if player.player_status == 0:
+			if player.player_status == 0 and self.ostracization == 'yes':
 			
 				self.remove_agent(player)
 				self.new_agent(1,1,1)
