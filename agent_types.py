@@ -20,6 +20,8 @@ class NeatFreak(Student):
 		self.player_status = 5
 		self.n_agents = n_agents
 		self.choice = 'no_games_played'
+		self.difference_list = []
+	
   
 		if sp_mode == "none":
 			sp = 0
@@ -28,14 +30,22 @@ class NeatFreak(Student):
 
 		self.reward_matrix = np.array([[max_cf - (max_cf - cf)/n_agents, cf], [max_cf - sp, cf]])
  
-	def update_rewards(self, cf, n_agents, sp, difference = 0, ccp = 1):
+	def update_rewards(self, cf, n_agents, sp, update = 0, ccp = 1, difference = 0):
+		
+		# print('neat')
+		# print(difference)
+		
+
 		if ccp == 1:
+			
+			
+			self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents) - update - difference / self.n_agents, cf - update - difference / self.n_agents], [self.max_cf - sp +  difference / 5, cf + difference / self.n_agents]])
+		else:
+			self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents) - update + difference / self.n_agents, cf - update + difference / self.n_agents ], [self.max_cf - sp - difference / self.n_agents, cf - difference/ self.n_agents]])
 
-			self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents) + difference / 5, cf + difference / 5], [self.max_cf - sp, cf]])
-
-		else :
-			self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents), cf ], [self.max_cf - sp +  difference / 5, cf + difference / 5]])
-
+	def incentive(self, number_runs):
+		incentive = np.sum(self.difference_list) / (number_runs - 20)
+		return incentive
 
 
 	def play(self):
@@ -72,26 +82,36 @@ class Slob(Student):
 		self.player_status = 5
 		self.n_agents = n_agents
 		self.choice = 'no_games_played'
+		self.difference_list = []
   
 		if sp_mode == "none":
 			sp = 0
 		elif sp_mode == "mode1":
 			sp = self.max_cf - self.cf
    
-		self.reward_matrix = np.array([[max_cf - (max_cf - cf)/n_agents, cf], [max_cf - sp, cf]])
+		self.reward_matrix = np.array([[max_cf - (max_cf - cf)/n_agents - 4  , cf - 4 ] , [max_cf - sp, cf]])
 
-	def update_rewards(self, cf, n_agents, sp, difference = 0, ccp = 1):
+	def update_rewards(self, cf, n_agents, sp, update = 0, ccp = 1, difference = 0):
+
+		# print('slob')
+		# print(difference)
+		
+		
+		
+
 		if ccp == 1:
 
-			self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents) + difference / 5, cf + difference / 5], [self.max_cf - sp, cf]])
+			self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents - 1 ) - update - difference / self.n_agents , cf - update - difference / self.n_agents - 1] , [self.max_cf - sp +  difference / 5, cf + difference / self.n_agents]])
+		else:
+			self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents  - 1) - update + difference / self.n_agents , cf - update + difference / self.n_agents - 1], [self.max_cf - sp - difference / self.n_agents, cf - difference/ self.n_agents]])
 
-		else :
-			self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents), cf ], [self.max_cf - sp +  difference / 5, cf + difference / 5]])
-
-
+	def incentive(self, number_runs):
+		incentive = np.sum(self.difference_list) / (number_runs - 20)
+		return incentive
 
 	def play(self):
 		"An instance of the prisoners dilemma"
+		# print(self.reward_matrix)
 		chance = np.random.uniform()
 		if chance < (1/3):
 			self.choice = 'defect'

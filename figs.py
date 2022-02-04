@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 
 def __main__():
+   
     print("plotting different starting values")
     for i in [-10, -5, 0, 5, 10]:
         model = Kitchen(cf=i)
@@ -11,6 +12,13 @@ def __main__():
         plt.plot(model.cfdata)
     plt.legend(["-10", "-5", "0", "5", "10"])
     plt.savefig("figs/plot_startingvalues.png", dpi=300)
+
+    print('plot')
+    plt.plot(model.run_number_list,model.slob_list,'-r', label = 'slob')
+    plt.plot(model.run_number_list,model.student_list,'-g', label = 'normal student')
+    plt.plot(model.run_number_list,model.neatfreak_list,'-b', label = 'neatfreak')
+    plt.legend()
+    plt.show()
 
     print("plotting different deteriorations")
     cf = 9
@@ -28,6 +36,8 @@ def __main__():
     #     model = Kitchen(cf=i, step_total=20)
     #     model.run_model(20)
     #     plt.plot(model.cfdata)
+    
+    plt.savefig("figs/student_fluctuation.png".format(cf), dpi=300)
 
 if __name__ == "__main__":
     __main__()
