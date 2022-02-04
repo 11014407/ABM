@@ -12,13 +12,15 @@ class Kitchen(Model):
 	"""
 	The model for the kitchen cleaning PD game
 	"""
+
 	def __init__(self, cleaning_mode, n_agents = 12, sp_mode = "none", remove_player = False, learning_mode = True):
 		self.remove_player = remove_player
+
 		self.n_agents = n_agents
 		self.min_cf = -10
 		self.max_cf = 10
-		self.cf = 0
-		self.deterioration = 1
+		self.cf = cf
+		self.deterioration = deterioration
 		self.agentlist = []
 		self.cleaning_mode = cleaning_mode
 		self.sp_mode = sp_mode
@@ -33,6 +35,7 @@ class Kitchen(Model):
 		self.student_c = []
 		self.learning_mode = learning_mode
 	
+
 		# matrix for awarded rewards
 		self.player_rewards = []
 
@@ -119,6 +122,7 @@ class Kitchen(Model):
 		self.neat_c.append(neat_options)
 		self.slob_c.append(slob_options)
 						
+
 		# calculate number of cooperators and proportion of cooperators
 		n_cooperators = choices.count('cooperate')
 		p_cooperators = n_cooperators/self.n_agents
@@ -245,6 +249,7 @@ class Kitchen(Model):
 
 						for i in range(11,20):
 
+
 							for j in new_matrix[i]:
 								total_nr_after += j
 						
@@ -255,19 +260,27 @@ class Kitchen(Model):
 						incentive = current_player.incentive(self.run_number)
 						current_player.update_rewards(self.cf,self.n_agents, current_player.sp ,difference = incentive, ccp = ccp)
 
+		self.run_number += 1
+		# print(self.cf)
+>
+
 						person += 1
 
 		self.run_number += 1
 		
 	def run_model(self, step_total):
+		self.cfdata = [self.cf]
 		for i in range(step_total):
 
 			self.step()
+
 			self.slob_list.append(self.agent_type_list.count('Slob'))
 			self.student_list.append(self.agent_type_list.count('Student'))
 			self.neatfreak_list.append(self.agent_type_list.count('NeatFreak'))
 			self.cf_list.append(self.cf)
 		
+
+			self.cfdata.append(self.cf)
 		self.player_rewards = np.array(self.player_rewards)
 		
 			
