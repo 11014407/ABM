@@ -16,10 +16,11 @@ print(matrix[0])
 full_matrix = np.zeros((TIME_STEPS, BATCH_AMOUNT))
 
 for i in range(BATCH_AMOUNT):
-	model_base = Kitchen(cleaning_mode = "full",  sp_mode="none", remove_player = False, learning_mode = False)
+	model_base = Kitchen(cleaning_mode = "full", cf = 10,  sp_mode="none", remove_player = False, learning_mode = False)
 	model_base.run_model(TIME_STEPS)
 	column = np.array(model_base.cf_list)
 	full_matrix[:, i] = column
+	print(i)
 
 mean_array = np.array([])
 for i in range(TIME_STEPS):
@@ -40,7 +41,7 @@ plt.fill_between(x, mean_array -err, mean_array+err)
 
 full_matrix = np.zeros((TIME_STEPS, BATCH_AMOUNT))
 for i in range(BATCH_AMOUNT):
-	model_base = Kitchen(cleaning_mode = "proportional",  sp_mode="none", remove_player = False, learning_mode = False)
+	model_base = Kitchen(cleaning_mode = "proportional", cf = 10,  sp_mode="none", remove_player = False, learning_mode = False)
 	model_base.run_model(TIME_STEPS)
 	column = np.array(model_base.cf_list)
 	full_matrix[:, i] = column
@@ -66,7 +67,7 @@ plt.fill_between(x, mean_array -err, mean_array+err)
 
 full_matrix = np.zeros((TIME_STEPS, BATCH_AMOUNT))
 for i in range(BATCH_AMOUNT):
-	model_base = Kitchen(cleaning_mode = "full",  sp_mode="mode1", remove_player = False, learning_mode = False)
+	model_base = Kitchen(cleaning_mode = "full",cf = 10,  sp_mode="mode1", remove_player = False, learning_mode = False)
 	model_base.run_model(TIME_STEPS)
 	column = np.array(model_base.cf_list)
 	full_matrix[:, i] = column
@@ -91,7 +92,7 @@ plt.fill_between(x, mean_array -err, mean_array+err)
 
 full_matrix = np.zeros((TIME_STEPS, BATCH_AMOUNT))
 for i in range(BATCH_AMOUNT):
-	model_base = Kitchen(cleaning_mode = "full",  sp_mode="none", remove_player = True, learning_mode = False)
+	model_base = Kitchen(cleaning_mode = "full", cf = 10, sp_mode="none", remove_player = True, learning_mode = False)
 	model_base.run_model(TIME_STEPS)
 	column = np.array(model_base.cf_list)
 	full_matrix[:, i] = column

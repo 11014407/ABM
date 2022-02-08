@@ -10,11 +10,14 @@ class Agent_type(Agent):
 	"""
 	def __init__(self, room, max_cf, cf, sp_mode, n_agents, id):
 		'''
-		Initializes a student with it's initial values and payoff matrix.
+		Initializes an agent with it's initial values and payoff matrix.
 		ARGS:
-			-room: a unique id representing the student's room number
-			-max_cf: The maximum cleanliness factor of the shared kitchen
+			-room: a unique id representing the student's room number.
+			-max_cf: The maximum cleanliness factor of the shared kitchen.
 			-cf: The current cleanliness factor of the shared kitchen.
+			-sp_mode: with or without social punishment.
+			-n_agents: number of agents within the system.
+			-id: type of agent(Student/NeatFreak/Slob).
 		'''
 		self.id = id
 		self.room = room
@@ -36,20 +39,27 @@ class Agent_type(Agent):
 
 		''' 
 		Different types of students have different types of reward matrices
+		ARGS:
+			-cf: current state of the kitchen.
+			-n_agents: number of agents .
+			-sp: social punishment.
+			-update: Learning method based on backwards learning.
+			-ccp: 1 in case player cooperates in middle row of matrix and 0 if defect.
+			-difference: Learning method based on backwards learning.
 		'''
 		if self.id == 'Student' or self.id == 'NeatFreak':
 		
 			if ccp == 1:
 				
-				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents) - update - difference / self.n_agents, cf - update - difference / self.n_agents], [self.max_cf - sp +  difference / self.n_agents, cf + difference / self.n_agents]])
+				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents) - update + difference / self.n_agents, cf - update + difference / self.n_agents], [self.max_cf - sp -  difference / self.n_agents, cf - difference / self.n_agents]])
 			else:
-				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents) - update + difference / self.n_agents, cf - update + difference / self.n_agents ], [self.max_cf - sp - difference / self.n_agents, cf - difference/ self.n_agents]])
+				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents) - update - difference / self.n_agents, cf - update - difference / self.n_agents ], [self.max_cf - sp + difference / self.n_agents, cf + difference/ self.n_agents]])
 
 		else:
-			if ccp == 0:
-				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents - 1 ) - update - difference / self.n_agents , cf - update - difference / self.n_agents - 1] , [self.max_cf - sp +  difference / self.n_agents, cf + difference / self.n_agents]])
+			if ccp == 1:
+				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents - 1 ) - update + difference / self.n_agents , cf - update + difference / self.n_agents - 1] , [self.max_cf - sp -  difference / self.n_agents, cf - difference / self.n_agents]])
 			else:
-				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents  - 1) - update + difference / self.n_agents , cf - update + difference / self.n_agents - 1], [self.max_cf - sp - difference / self.n_agents, cf - difference/ self.n_agents]])
+				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents  - 1) - update - difference / self.n_agents , cf - update - difference / self.n_agents - 1], [self.max_cf - sp + difference / self.n_agents, cf + difference/ self.n_agents]])
 
 		
 	def incentive(self, number_runs):
@@ -57,6 +67,10 @@ class Agent_type(Agent):
 		return incentive
 
 	def play(self):
+		'''play function checks what the best option is for every player.
+			Additionally a random factor for neatfreaks and slobs has been 
+			to automatically cooperate or defect.
+		'''
 		#"An instance of the prisoners dilemma"
 
 		
