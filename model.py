@@ -103,12 +103,13 @@ class Kitchen(Model):
 		'''
 		if player.player_status == 0:
 			room = player.room
+   
 			self.remove_agent(player)
    
 			# replace removed player with new player
 			check = random.randint(0, 2)
 			self.agent_type_list.remove(player.id)
-			self.new_agent(player.room, check)
+			self.new_agent(room, check)
 			self.n_agents += 1
 			self.run_number_list.append(self.run_number)
 			
@@ -121,7 +122,6 @@ class Kitchen(Model):
 		'''
 		if self.sp_mode == "none":
 			sp = 0
-			predict_sp = 0
 		elif self.sp_mode == "mode1":
 			if self.n_agents != n_cooperators:
 				sp = self.max_cf - (self.max_cf - self.cf) / (self.n_agents - n_cooperators)
