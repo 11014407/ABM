@@ -26,6 +26,7 @@ class Agent_type(Agent):
 		self.choice = 'no_games_played'
 		self.difference_list = []
 	
+		# determine initial value of social punishment
 		if sp_mode == "none":
 			sp = 0
 		elif sp_mode == "mode1":
@@ -73,8 +74,10 @@ class Agent_type(Agent):
 		Additionally a random factor for neatfreaks and slobs has been 
 		to automatically cooperate or defect.
 		'''
+		# determine best choice from predicted reward matrix
 		choice_index = np.argmax(self.reward_matrix)
 
+		# random chance to auto cooperate or defect
 		if self.id == 'NeatFreak':
 			if random.random() < 0.33:
 				choice_index = 1
@@ -83,6 +86,7 @@ class Agent_type(Agent):
 			if random.random() > 0.33:
 				choice_index = 1
 		
+		# determine choice and update player status
 		if choice_index == 0 or choice_index == 1: 
 			self.choice = 'cooperate'
 			self.player_status = 5 
