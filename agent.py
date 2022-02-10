@@ -34,7 +34,6 @@ class Agent_type(Agent):
 		self.reward_matrix = np.array([[max_cf - (max_cf - cf)/n_agents, cf], [max_cf - sp, cf]])
 
 	def update_rewards(self, cf, n_agents, sp, update = 0, ccp = 1, difference = 0):
-
 		''' 
 		Different types of students have different types of reward matrices
 		ARGS:
@@ -46,44 +45,34 @@ class Agent_type(Agent):
 			-difference: Learning method based on backwards learning.
 		'''
 		if self.id == 'Student' or self.id == 'NeatFreak':
-
-			# if self.id == 'NeatFreak':
-			# 	# print(difference)
-			
 			if ccp == 1:
 				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents) - update + difference / self.n_agents, cf - update + difference / self.n_agents], [self.max_cf - sp -  difference / self.n_agents + update, cf - difference / self.n_agents + update]])
 			else:
 				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents) - update - difference / self.n_agents, cf - update - difference / self.n_agents ], [self.max_cf - sp + difference / self.n_agents + update, cf + difference/ self.n_agents + update]])
-
 		else:
 			if ccp == 1:
-				# print(difference)
 				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents - 1 ) - update + difference / self.n_agents , cf - update + difference / self.n_agents - 1] , [self.max_cf - sp -  difference / self.n_agents + update, cf - difference / self.n_agents + update]])
 			else:
-				# print(difference)
 				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents  - 1) - update - difference / self.n_agents , cf - update - difference / self.n_agents - 1], [self.max_cf - sp + difference / self.n_agents + update, cf + difference/ self.n_agents + update]])
-
 		
 	def incentive(self, number_runs,variable_rows):
 		'''
 		Calculates the incentive based on the average of the difference
-		gotten by forward learning.
+		gotten by forward learning
 		ARGS:
 			number_runs: total number of runs
 		output: incentive as float
 		'''
 		incentive = np.sum(self.difference_list) / (number_runs - (variable_rows - 1))
+  
 		return incentive
 
 	def play(self):
 		'''
-		Play function checks what the best option is for every player.
-			Additionally a random factor for neatfreaks and slobs has been 
-			to automatically cooperate or defect.
+		Play function checks what the best option is for every player
+		Additionally a random factor for neatfreaks and slobs has been 
+		to automatically cooperate or defect.
 		'''
-		#"An instance of the prisoners dilemma"
-
-		
 		choice_index = np.argmax(self.reward_matrix)
 
 		if self.id == 'NeatFreak':
@@ -102,8 +91,9 @@ class Agent_type(Agent):
 			self.player_status -= 1
 
 	def step(self):
-		'''A step in the model'''
+		'''
+  		A step in the model
+    	'''
 		choice = self.play()
 		
 		return choice
-

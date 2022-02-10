@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def __main__(): 
-
     timesteps = 366
     model_runs = 100
     avg_prop = np.zeros(timesteps+1)
@@ -30,7 +29,6 @@ def __main__():
     plt.show()
     plt.clf()
 
-
     # model = Kitchen(sp_mode='none', cleaning_mode='proportional')
     # model.run_model(366)
     # plt.plot(range(366+1), model.cfdata)
@@ -45,8 +43,6 @@ def __main__():
     # # plt.show()
     # plt.clf()
 
-
-
     # model = Kitchen(sp_mode = "mode1", cleaning_mode='proportional')
     # model.run_model(366)
     # plt.plot(range(366+1), model.cfdata)
@@ -54,8 +50,6 @@ def __main__():
     # # model.run_model(366)
     # plt.savefig("figs/proportionalcleaning.png", dpi=300)
     # plt.clf()
-
-
 
     # print("plotting different starting values")
     # for i in [-10, -5, 0, 5, 10]:

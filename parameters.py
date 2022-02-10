@@ -28,23 +28,27 @@ for i in range(BATCH_AMOUNT):
 
 # Mean of the batch at every timestep
 mean_array = np.array([])
+
 for i in range(TIME_STEPS):
 	mean_array = np.append(mean_array, np.mean(full_matrix[i]))
 
 # Error calculation of the mean
 mean_array = np.array([])
 err_array = np.array([])
+
 for i in range(TIME_STEPS):
 	mean_array = np.append(mean_array, np.mean(full_matrix[i]))
 	std = np.std(full_matrix[i])
 	err = 1.96*std/np.sqrt(TIME_STEPS)
 	err_array = np.append(err_array, err)
+
 # Make plots
 plt.plot(x, mean_array, label = "full baseline")
 plt.fill_between(x, mean_array -err, mean_array+err)
 
 # Matrix filled with 365 rows and 50 columns
 full_matrix = np.zeros((TIME_STEPS, BATCH_AMOUNT))
+
 # Create list of testing values
 parameterlist = [7,11,21,19,15,25,57,43]
 
@@ -57,17 +61,20 @@ for i in range(len(parameterlist)):
 
 # Mean of the batch at every timestep
 mean_array = np.array([])
+
 for i in range(TIME_STEPS):
 	mean_array = np.append(mean_array, np.mean(full_matrix[i]))
 
 # Error calculation of the mean
 mean_array = np.array([])
 err_array = np.array([])
+
 for i in range(TIME_STEPS):
 	mean_array = np.append(mean_array, np.mean(full_matrix[i]))
 	std = np.std(full_matrix[i])
 	err = 1.96*std/np.sqrt(TIME_STEPS)
 	err_array = np.append(err_array, err)
+ 
 plt.plot(x, mean_array, label = "full baseline")
 plt.fill_between(x, mean_array -err, mean_array+err)
 
@@ -83,17 +90,20 @@ for i in range(BATCH_AMOUNT):
 
 # Mean of the batch at every timestep
 mean_array = np.array([])
+
 for i in range(TIME_STEPS):
 	mean_array = np.append(mean_array, np.mean(full_matrix[i]))
 
 # Error calculation of the mean
 mean_array = np.array([])
 err_array = np.array([])
+
 for i in range(TIME_STEPS):
 	mean_array = np.append(mean_array, np.mean(full_matrix[i]))
 	std = np.std(full_matrix[i])
 	err = 1.96*std/np.sqrt(TIME_STEPS)
 	err_array = np.append(err_array, err)
+
 plt.plot(x, mean_array, label = "different initial cf")
 plt.fill_between(x, mean_array -err, mean_array+err)
 

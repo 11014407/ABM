@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def __main__(): 
-
     # Creates empty lists 
     average_number_slobs = []
     average_number_students = []
@@ -36,7 +35,6 @@ def __main__():
 
     # Run the entire system 25 times to depend on averages
     for i in range(25):
-     
         print(i)
         model = Kitchen(cf = 10,cleaning_mode='full',n_agents= 21,sp_mode = 'mode1' ,remove_player= False)
         model.run_model(amount_runs)
@@ -95,11 +93,13 @@ def __main__():
     plt.legend()
     plt.savefig("figs/plot_Neat_with_without_learning.png", dpi=300)
     plt.show()
+    
     plt.plot(number_steps_list,average_slob_c_learning,'g-', label = 'Slob with learning')
     plt.plot(number_steps_list,average_slob_c_nolearning,'g--', label = 'Slob no learning')
     plt.legend()
     plt.savefig("figs/plot_Slob_with_without_learning.png", dpi=300)
     plt.show()
+    
     plt.plot(number_steps_list,average_student_c_learning,'b-', label = 'Student with learning')
     plt.plot(number_steps_list,average_student_c_nolearning,'b--', label = 'Student no learning')
     plt.legend()
@@ -129,4 +129,3 @@ def __main__():
 
 if __name__ == "__main__":
      __main__()
-
