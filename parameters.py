@@ -45,10 +45,6 @@ for i in range(TIME_STEPS):
 # Make plots
 plt.plot(x, mean_array, label = "full baseline")
 plt.fill_between(x, mean_array -err, mean_array+err, alpha = 0.2)
-plt.xlabel("Time steps")
-plt.ylabel("mean cleanliness factor")
-plt.legend()
-plt.show()
 
 # Matrix filled with 365 rows and 50 columns
 full_matrix = np.zeros((TIME_STEPS, BATCH_AMOUNT))
@@ -78,13 +74,41 @@ for i in range(TIME_STEPS):
 	std = np.std(full_matrix[i])
 	err = 1.96*std/np.sqrt(TIME_STEPS)
 	err_array = np.append(err_array, err)
- 
-plt.plot(x, mean_array, label = "full baseline")
+
+plt.plot(x, mean_array, label = "different learning rows")
 plt.fill_between(x, mean_array -err, mean_array+err, alpha = 0.2)
+# Make plots
 plt.xlabel("Time steps")
 plt.ylabel("mean cleanliness factor")
 plt.legend()
 plt.show()
+
+for i in range(BATCH_AMOUNT):
+	model_base = Kitchen(0, cleaning_mode = "full",  sp_mode="none", remove_player = True, learning_mode = True)
+	model_base.run_model(TIME_STEPS)
+	column = np.array(model_base.cf_list)
+	full_matrix[:, i] = column
+
+# Mean of the batch at every timestep
+mean_array = np.array([])
+
+for i in range(TIME_STEPS):
+	mean_array = np.append(mean_array, np.mean(full_matrix[i]))
+
+# Error calculation of the mean
+mean_array = np.array([])
+err_array = np.array([])
+
+for i in range(TIME_STEPS):
+	mean_array = np.append(mean_array, np.mean(full_matrix[i]))
+	std = np.std(full_matrix[i])
+	err = 1.96*std/np.sqrt(TIME_STEPS)
+	err_array = np.append(err_array, err)
+
+# Make plots
+plt.plot(x, mean_array, label = "full baseline")
+plt.fill_between(x, mean_array -err, mean_array+err, alpha = 0.2)
+
 # Matrix filled with 365 rows and 50 columns
 full_matrix = np.zeros((TIME_STEPS, BATCH_AMOUNT))
 
