@@ -1,1 +1,29 @@
-The readme for the student kitchen model
+README:
+
+This is a guide to executing the code of the Kitchen model which simulates a group of students attempting to keep their shared kitchen clean.
+The model consists of two core files, one exectuing file and two analysis files:
+	agent.py (agents file)
+	model.py (model file)
+	kitchen_pd.py (execution file)
+	Sensitivity.py (module analysis)
+	parameters.py (parameter analysis)
+
+Required python libraries:
+	-Mesa https://docs.mesastar.org/en/latest/installation.html
+	-Numpy https://numpy.org/install/
+	-Matplotlib https://matplotlib.org/stable/users/installing/index.html
+	-random https://pypi.org/project/random2/
+
+running the code:
+	You run the code by executing python kitchen_pd.py in the command line
+
+	If you wish to eddit the model you can open the kitchen_pd.py file and change the parameters and active modules in the line:
+	model_base = Kitchen(cf =0, cleaning_mode = "proportional",  sp_mode="mode1", remove_player = True, learning_mode = True, variable_rows = 21)
+
+	cf (int between -10 and 10): initial cleanliness factor
+	cleaningmode (str): 'proportional' for the proportional cleaning method where each agent cleans only a little or 'full' where one agent can clean the entire kitchen
+	n_agents (int > 1): an integer that is larger than or equal to 2 for the number of agents.
+	sp_mode (str): 'none' for no social punishment aspect or 'mode1' for a model which punishses agents for not cleaning
+	remove_player(Boolean): Remove agents if they deffect to much if set to True
+	learning_mode(Boolean): If true the agents will look at past outcomes of decissions and change their strategy based on that
+	Variables rows (int > 3 and odd): An integer that determines how many steps should be looked at when learning from past decissions, should be an odd integer and at least 3.

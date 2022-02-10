@@ -1,8 +1,6 @@
 import numpy as np
-import pandas as pd
 import random
 from mesa import Agent
-from scipy.fftpack import cc_diff
 
 class Agent_type(Agent):
 	"""
@@ -48,26 +46,38 @@ class Agent_type(Agent):
 			-difference: Learning method based on backwards learning.
 		'''
 		if self.id == 'Student' or self.id == 'NeatFreak':
-		
+
+			# if self.id == 'NeatFreak':
+			# 	# print(difference)
+			
 			if ccp == 1:
-				
-				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents) - update + difference / self.n_agents, cf - update + difference / self.n_agents], [self.max_cf - sp -  difference / self.n_agents, cf - difference / self.n_agents]])
+				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents) - update + difference / self.n_agents, cf - update + difference / self.n_agents], [self.max_cf - sp -  difference / self.n_agents + update, cf - difference / self.n_agents + update]])
 			else:
-				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents) - update - difference / self.n_agents, cf - update - difference / self.n_agents ], [self.max_cf - sp + difference / self.n_agents, cf + difference/ self.n_agents]])
+				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents) - update - difference / self.n_agents, cf - update - difference / self.n_agents ], [self.max_cf - sp + difference / self.n_agents + update, cf + difference/ self.n_agents + update]])
 
 		else:
 			if ccp == 1:
-				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents - 1 ) - update + difference / self.n_agents , cf - update + difference / self.n_agents - 1] , [self.max_cf - sp -  difference / self.n_agents, cf - difference / self.n_agents]])
+				# print(difference)
+				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents - 1 ) - update + difference / self.n_agents , cf - update + difference / self.n_agents - 1] , [self.max_cf - sp -  difference / self.n_agents + update, cf - difference / self.n_agents + update]])
 			else:
-				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents  - 1) - update - difference / self.n_agents , cf - update - difference / self.n_agents - 1], [self.max_cf - sp + difference / self.n_agents, cf + difference/ self.n_agents]])
+				# print(difference)
+				self.reward_matrix = np.array([[(self.max_cf - (self.max_cf - cf)/n_agents  - 1) - update - difference / self.n_agents , cf - update - difference / self.n_agents - 1], [self.max_cf - sp + difference / self.n_agents + update, cf + difference/ self.n_agents + update]])
 
 		
-	def incentive(self, number_runs):
-		incentive = np.sum(self.difference_list) / (number_runs - 20)
+	def incentive(self, number_runs,variable_rows):
+		'''
+		Calculates the incentive based on the average of the difference
+		gotten by forward learning.
+		ARGS:
+			number_runs: total number of runs
+		output: incentive as float
+		'''
+		incentive = np.sum(self.difference_list) / (number_runs - (variable_rows - 1))
 		return incentive
 
 	def play(self):
-		'''play function checks what the best option is for every player.
+		'''
+		Play function checks what the best option is for every player.
 			Additionally a random factor for neatfreaks and slobs has been 
 			to automatically cooperate or defect.
 		'''
@@ -81,8 +91,8 @@ class Agent_type(Agent):
 				choice_index = 1
 
 		if self.id == 'Slob':
-			if random.random() < 0.33:
-				choice_index = 2
+			if random.random() > 0.33:
+				choice_index = 1
 		
 		if choice_index == 0 or choice_index == 1: 
 			self.choice = 'cooperate'
@@ -94,5 +104,6 @@ class Agent_type(Agent):
 	def step(self):
 		'''A step in the model'''
 		choice = self.play()
+		
 		return choice
 

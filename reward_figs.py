@@ -37,12 +37,12 @@ def __main__():
     # Run the entire system 25 times to depend on averages
     for i in range(25):
      
-        
-        model = Kitchen(cf = 10,cleaning_mode='full',sp_mode = 'mode1' ,remove_player= False)
+        print(i)
+        model = Kitchen(cf = 10,cleaning_mode='full',n_agents= 21,sp_mode = 'mode1' ,remove_player= False)
         model.run_model(amount_runs)
         cf_1_list = model.cf_list
 
-        model_2 = Kitchen(cf = 10,cleaning_mode='full',sp_mode ='mode1',remove_player= False, learning_mode=False)
+        model_2 = Kitchen(cf = 10,cleaning_mode='full',n_agents = 21,sp_mode ='mode1',remove_player= False, learning_mode=False)
         model_2.run_model(amount_runs)
         cf_2_list = model_2.cf_list
 
@@ -54,11 +54,11 @@ def __main__():
         student_list_learning = model.student_c
         student_list_nolearning = model_2.student_c
 
-        average_reward = np.mean(model.player_rewards, axis = 1)
-        plt.plot(range(amount_runs), average_reward)
-        plt.xlabel('Timestep')
-        plt.ylabel('Average reward')
-        plt.show()
+        # average_reward = np.mean(model.player_rewards, axis = 1)
+        # plt.plot(range(amount_runs), average_reward)
+        # plt.xlabel('Timestep')
+        # plt.ylabel('Average reward')
+        # plt.show()
        
        # Sum up all factors within every list for amount of times system runs.
         for j in range(len(average_number_slobs)):
@@ -91,15 +91,19 @@ def __main__():
     #  Make plots for all agent types with and without learning
     plt.plot(number_steps_list,average_neat_c_learning,'r-',label = 'NeatFreak with learning')
     plt.plot(number_steps_list,average_neat_c_nolearning,'r--', label = 'NeatFreak no learning')
+    plt.xlim(0,40)
     plt.legend()
+    plt.savefig("figs/plot_Neat_with_without_learning.png", dpi=300)
     plt.show()
     plt.plot(number_steps_list,average_slob_c_learning,'g-', label = 'Slob with learning')
     plt.plot(number_steps_list,average_slob_c_nolearning,'g--', label = 'Slob no learning')
     plt.legend()
+    plt.savefig("figs/plot_Slob_with_without_learning.png", dpi=300)
     plt.show()
     plt.plot(number_steps_list,average_student_c_learning,'b-', label = 'Student with learning')
     plt.plot(number_steps_list,average_student_c_nolearning,'b--', label = 'Student no learning')
     plt.legend()
+    plt.savefig("figs/plot_Student_with_without_learning.png", dpi=300)
     plt.show()
 
     # Make plot of system with and without ostracization

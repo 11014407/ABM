@@ -1,10 +1,7 @@
-from re import S
 import numpy as np
-import pandas as pd
 import random
 from mesa import Model
 from agent import *
-from mesa.time import RandomActivation
 
 class Kitchen(Model):
 	"""
@@ -22,9 +19,23 @@ class Kitchen(Model):
 			-remove_player: system with or without ostracization.
 			-learning_mode: with or without learning.
 			-variable_rows: number of rows(at least 3) on what the agent bases its forward learning.
-
 		'''
-		self.remove_player = remove_player
+		# Check if variable rows has a valid entry
+		if variable_rows < 3 or variable_rows % 2 == 0:
+			print('Error : variable rows should be uneven and higher than 2') 
+			exit()
+		
+		if n_agents < 2:
+			print('Error: Number of agents should be at least 2')
+			exit()
+		
+		if cf < -10 or cf > 10:
+			print('Error: Cleanliness factor out of bounds of min value and max values.' )
+			print('should be between -10 and 10')
+			exit()
+
+		# Initialize all model properties
+		self.ostracization = remove_player
 		self.n_agents = n_agents
 		self.min_cf = -10
 		self.max_cf = 10
@@ -98,7 +109,9 @@ class Kitchen(Model):
 	def social_punishment(self,n_cooperators):
 		'''Includes social punishment in payoff matrix of agent when defecting
 		ARGS:
-			-n_cooperators: number of cooperators, if zero no punishment is included.'''
+			-n_cooperators: number of cooperators, if zero no punishment is included.
+		output: Returns social punishment as float.
+		'''
 		if self.sp_mode == "none":
 			sp = 0
 			predict_sp = 0
@@ -147,7 +160,7 @@ class Kitchen(Model):
 			-sp: Social punishment
 		'''
 		total = 0
-
+		
 		for i in self.matrix:
 			for j in i:
 				total += j
@@ -172,9 +185,10 @@ class Kitchen(Model):
 			-sp: social punishment
 		'''
 		person = 0	
+		
 		for element in self.matrix[int((self.variable_rows - 1)/2)]:
 			ccp = 0
-			if element == 0:
+			if element == 1:
 				ccp = 1
 			new_matrix = self.matrix.copy()
 			new_matrix = np.delete(new_matrix,person,1)
@@ -191,12 +205,12 @@ class Kitchen(Model):
 			for i in range(int((self.variable_rows - 1)/ 2) + 1,self.variable_rows - 1):
 				for j in new_matrix[i]:
 					total_nr_after += j
+			
 			# Calculate the difference
 			difference = total_nr_after - total_nr_previous
-			
 			current_player = self.agentlist[person]
 			current_player.difference_list.append(difference)
-			incentive = current_player.incentive(self.run_number)
+			incentive = current_player.incentive(self.run_number,self.variable_rows)
 			current_player.update_rewards(self.cf, self.n_agents, sp ,difference = incentive, ccp = ccp)
 
 			person += 1
@@ -233,6 +247,7 @@ class Kitchen(Model):
 			student_options: empty list which will later receive choices of students.
 			neat_options: empty list which will later receive choices of neatfreaks.
 			slob_options: empty list which will later receive choices of slobs.
+		output: Returns three integer values.
 		'''
 		
 		if player.id == 'Student' and player.choice == 'cooperate':
@@ -250,7 +265,7 @@ class Kitchen(Model):
 		'''Step function goes through all steps all agents need to complete in one time step 
 		of the game of cleaning the kitchen
 		'''
-		# Add row to reward list
+		# Add row to reward list and initializes lists and values.
 		self.player_rewards.append([])
 		choices = []
 		matrix_loop = 0
@@ -259,6 +274,7 @@ class Kitchen(Model):
 		slob_options = 0
 		student_options = 0
 		
+		# Runs a single instance of the prisoners dillema and looks at all player choices.
 		for player in self.agentlist:
 			player.step()
 			student_options, neat_options, slob_options = self.options(player, student_options, neat_options, slob_options)
@@ -274,7 +290,8 @@ class Kitchen(Model):
 		# Calculate number of cooperators and proportion of cooperators
 		n_cooperators = choices.count('cooperate')
 		p_cooperators = n_cooperators/self.n_agents
-  	
+
+		# Update the social punishment values and the cleaniness factor.
 		sp = self.social_punishment(n_cooperators)
 		self.cleaning(n_cooperators,p_cooperators)
 
@@ -289,7 +306,7 @@ class Kitchen(Model):
 		for player in self.agentlist:
 			self.give_player_rewards(player, n_cooperators, predict_sp)
 			# Update reward matrix of player
-			if self.remove_player == True:			
+			if self.ostracization == True:			
 				self.remove_player(player)
 			player.update_rewards(self.cf, self.n_agents, predict_sp)
 
@@ -298,8 +315,10 @@ class Kitchen(Model):
 		self.matrix = np.insert(self.matrix,self.variable_rows - 1,choice_list, axis = 0)
 		if self.learning_mode == True:
 			self.backwards_learning(predict_sp)
-			# Learning is initialized only after matrix has entirely been replaces by players' choices
 			if self.run_number > self.variable_rows:
+				
+			# Learning is initialized only after matrix has entirely been replaces by players' choices
+			
 				self.forwards_learning(predict_sp)
 		self.run_number += 1
 		
@@ -312,7 +331,7 @@ class Kitchen(Model):
 		for i in range(step_total):
 
 			self.step()
-
+			# Save agent types and cleanliness factor
 			self.slob_list.append(self.agent_type_list.count('Slob'))
 			self.student_list.append(self.agent_type_list.count('Student'))
 			self.neatfreak_list.append(self.agent_type_list.count('NeatFreak'))
@@ -320,6 +339,7 @@ class Kitchen(Model):
 		
 
 			self.cfdata.append(self.cf)
+		# Save all player rewards
 		self.player_rewards = np.array(self.player_rewards)
 		
 			
